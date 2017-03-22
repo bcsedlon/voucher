@@ -1,0 +1,38 @@
+{% extends 'voucherapp/base.html' %}
+
+{% load staticfiles %}
+
+{% block content %}
+
+<h1>IMPORT</h1>
+
+{% comment %}
+https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html
+{% endcomment %}
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="filepath">
+    <button type="submit"> Importovat </button>
+</form>
+
+<hr>
+
+{% if uploaded_file_url %}
+{% if error_messages|length > 0 %}
+    <h2>CHYBA</h2>
+{% else %}
+    <h2>OK</h2>
+{% endif %}
+
+
+<p>Soubor: {{ uploaded_file_url }}</p>
+
+
+{% if error_messages %}
+{%for msg in error_messages%}
+    {{ msg }} <br>
+{% endfor %}
+{% endif %}
+{% endif %}
+{% endblock %} 

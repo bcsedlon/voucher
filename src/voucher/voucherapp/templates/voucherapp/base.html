@@ -1,0 +1,21 @@
+﻿{% load staticfiles %}
+
+<html>
+<head>
+</head>
+
+<body>
+<p>
+<a href="{% url 'admin:index' %}">Správce</a> 
+<a href="{% url 'voucherapp:logfile' %}">Log</a>   
+<a href="{% url 'voucherapp:simulate' %}">Simulace</a> 
+<a href="{% url 'voucherapp:upload' %}">Import</a>   
+</p>
+<hr>
+<p>
+{% block content %}
+
+{% endblock %}
+</p>
+</body>
+</html>

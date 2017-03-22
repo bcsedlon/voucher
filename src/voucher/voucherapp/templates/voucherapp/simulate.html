@@ -1,0 +1,62 @@
+{% extends 'voucherapp/base.html' %}
+
+{% load staticfiles %}
+
+{% block content %}
+
+{% comment %}
+{% if form %}
+    {% if form.errors %}<p><strong>{{ form.errors }}</strong></p>{% endif %}
+{% endif %}
+{% endcomment %}
+
+<h1>SIMULACE</h1>
+
+    <form method="POST" action=".">
+        {% csrf_token %}
+Osoba: 
+        {{ form.person }}
+
+            <button type="submit" name="submit"> Odeslat </button>
+  
+    </form>
+
+
+<hr>
+
+{% if result %}
+    <h2>VYDÁNO</h2>
+{% else %}
+    {% if person %}
+        <h2>NEVYDÁNO: {{ message }} </h2>
+    {% else %}
+        <h2>NEVYDÁNO: {{ message }} </h2>
+    {% endif %}
+{% endif %}
+
+{% if person %}
+    <h3> {{ person }} </h3>
+    <table>
+    <tr><td>RFID: </td><td>{{ person.rfid }} </td></tr>
+    <tr><td>Osobní číslo: </td><td> {{ person.personal_number }} </td></tr>
+    <tr><td>Středisko: </td><td> {{ person.center }} </td></tr>
+    <tr><td>Počet kupónů na měsíc: </td><td> {{ person.quantity }} </td></tr>
+    <tr><td>Počet vydaných kupónů za měsíc: </td><td> {{ person.released }} </td></tr>   
+    <tr><td>Datum a čas vydání: </td><td>{{ person.last_released }} </td></tr>   
+    </table>
+    
+{% endif %}
+
+<hr>
+
+{% if result %}
+    <h2>TISK</h2>
+    <table>
+    <tr><td>Osobní číslo: </td><td> {{ person.personal_number }} </td></tr>
+    <tr><td>Středisko: </td><td> {{ person.center }} </td></tr>
+    <tr><td>Vydáno / z celkem: </td><td> {{ person.released }} / {{ person.quantity }} </td></tr>
+    <tr><td>Měsíc: </td><td> {{ person.last_released|date:"F" }} {{ person.last_released|date:"Y" }} </td></tr>
+    </table>
+{% endif %}
+
+{% endblock %} 
