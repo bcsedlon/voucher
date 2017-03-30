@@ -10,13 +10,97 @@ import time
 import logging
 import csv 
 
+from django.utils.translation import get_language, activate
+import datetime
+from django.template.defaultfilters import date
+
+import cups
+from django.utils import timezone
+
+activate('cs')
+logger = logging.getLogger()
+
+
+    
+'''
 def printVoucher(person):
     print(person.personal_number)
     print(person.center)
     print(str(person.released) + ' / ' + str(person.quantity))
     return True
     return False
+'''
+def exportFile(fname, logger=logging.getLogger()):
+    #logger = logging.getLogger()
+    '''
+    with open(fname, 'w', newline='') as fp:
+    a = csv.writer(fp, delimiter=';')
+    data = [['Me', 'You'],
+            ['293', '219'],
+            ['54', '13']]
+    a.writerows(data)
+    return
+    '''
+    try:
+        f = open(fname, 'w')
+    except Exception as e:
+        logger.error(str(e))
+        return
 
+    with f:
+        writer = csv.writer(f, delimiter = ';')
+        
+        vouchers = Voucher.objects.filter()
+        
+        
+        for v in vouchers:
+            #now = timezone.localtime(timezone.now())
+            #print(now.strftime("%Y-%m-%d %H:%M"))
+            data = [str(v.person), str(v.person.center), timezone.localtime(v.datetime).strftime("%Y-%m-%d %H:%M")]
+            #print(data)
+        
+            writer.writerow(data)
+        
+        
+        '''
+        for row in reader:
+            #print(row)
+            rfid = None
+            personal_number = None
+            center = None
+            quantity  = None
+                
+            try:
+                #0564-1-HPP;0800E807DD;601;1
+                #rfid = int(row[1], 16)
+                rfid = row[1]
+                personal_number = row[0]
+                center = row[2]
+                #first_name = 
+                #last_name = 
+                #note = 
+                quantity = row[3]
+                #released = 
+                #last_released = 
+            except Exception as e:
+                logger.warning(str(e) + ' DATA: ' + str(row))
+                #print(str(e))
+                next 
+                
+            try:
+                person = Person.objects.get(personal_number = personal_number)
+                person.rfid = rfid
+                person.center = center
+                person.quantity = quantity
+                person.save()
+            except:
+                try:
+                    Person.objects.create(rfid = rfid, personal_number = personal_number, center = center, quantity = quantity)
+                except Exception as e:
+                    logger.error(str(e) + ' DATA: ' + str(row))
+                    #print(str(e))
+        '''
+                    
 def importFile(fname, logger=logging.getLogger()):
     #logger = logging.getLogger()
     
@@ -69,12 +153,22 @@ def importFile(fname, logger=logging.getLogger()):
 def saveVoucher(person):
     person.save()
     Voucher.objects.create(person=person, datetime=timezone.now())
-        
+
 def getPreparedPerson(rfid):
     try:
         hasCredit = False
         message = None
         person = Person.objects.get(rfid=rfid) 
+        return getPreparedPerson2(person)
+    except Exception as e:
+        logger.error(str(e)) 
+        return (False, None, str(e), )
+        
+def getPreparedPerson2(person):
+    try:
+        hasCredit = False
+        message = None
+        #person = Person.objects.get(rfid=rfid) 
                     
         #print(person)
         #print(person.last_released)
@@ -117,14 +211,49 @@ def getPreparedPerson(rfid):
                 #print('NOK\t' + str(person.released) + '/' +  str(person.quantity))
                     
     except Exception as e:
-        hasCredit = False
         #print(e)
-        return (hasCredit, None, str(e), )
+        return (False, None, str(e), )
         
-    return (hasCredit, person, message)      
-        
+    return (hasCredit, person, message)     
 
-class Command(BaseCommand):
+def printVoucher(person): #conn, printer, person):
+    try:
+        conn = cups.Connection ()
+        printers = conn.getPrinters ()
+            
+        for printer in printers:
+            logger.debug('{0} {1}'.format(printer, printers[printer]['device-uri']))
+            
+    #except Exception as e:
+    #logger.error(str(e)) 
+    #return   
+    #try:
+        month = date(person.last_released, 'F').encode('utf-8')
+        #print(month)
+        #data = '{0}\n{1}\n{2}/{3}\n{4}'.format(str(person.personal_number), person.center, str(person.released), str(person.quantity), 'f')
+        data = '''Osobní č.: {}
+Středisko: {}
+Vydáno   : {} z {}
+Měsíc    : {} {}'''.format(str(person.personal_number), person.center, str(person.released), str(person.quantity), month, person.last_released.strftime('%Y')) #person.last_released.strftime('%B') #date(person.last_released, 'F')
+        print(data)
+        
+        return True
+        
+        f = open('print.txt', 'w')
+        f.write(data)
+        f.close()
+        printid =conn.printFile(printer, 'print.txt', 'voucher', {})
+
+        while conn.getJobs().get(printid, None) is not None:
+            time.sleep(1)
+                
+    except Exception as e:
+            logger.error(str(e)) 
+            return False
+    
+    return True
+        
+class Command25(BaseCommand):
     help = 'core'
 
     def add_arguments(self, parser):
@@ -135,34 +264,54 @@ class Command(BaseCommand):
         )  
 
     #logger = logging.getLogger()
-
         
     def handle(self, *args, **options):
         
-        logger = logging.getLogger()
+        activate('cs')
+            
+        #logger = logging.getLogger()
         
-        port = 'COM2'
-        baud = 9600
-        #ser = serial.Serial(port, baud, timeout=0)
+        '''
+        printer = None
+        conn = None
+        try:
+            conn = cups.Connection ()
+            printers = conn.getPrinters ()
+            
+            for printer in printers:
+                logger.debug('{0} {1}'.format(printer, printers[printer]['device-uri']))
+            #printer = printers[0]
+            
+        except Exception as e:
+            logger.error(str(e)) 
+            return
+        '''
+            
+        #port = 'COM2'
+        #baud = 9600
+        port = '/dev/ttyUSB0'
+        baud = 4800
         
         try:
             ser = serial.Serial(port, baud, timeout=None)
         except Exception as e:
             logger.error(str(e))
-            #return
+            return
+        logger.debug(ser)
         
         rfid_last = 0
         rfid_datetime = 0
         
-        print('READY')
+        logger.debug('READY')
         
         while True:
-            '''
+            
             #time.sleep(0.1)
             #print('COM2')
             #data = ser.read()
-            #data = ser.readline()#.decode()
+            data = ser.readline().decode()
             #print(data)
+            '''
             ID = ''
             rfid = 0
             read_byte = ser.read()
@@ -182,64 +331,79 @@ class Command(BaseCommand):
             #print(int(time.time()))
             #print('')
             '''
-            rfid = '08004B6C2A'
+            #rfid = '08004B6C2A'
+            rfid = data.replace('\n', '').replace('\r', '')
             
             if rfid_datetime + 5 < int(time.time()):
                 rfid_last = 0
         
-            if rfid > 0 and rfid_last <> rfid:
-                print('')
+            if rfid <> '' and rfid_last <> rfid:
+                logger.debug('RFID: ' + rfid)
+                #print('X')
                 
                 rfid_last = rfid
                 rfid_datetime = int(time.time())
 
                 #rfid = 458
                 #EA00022F7ABD 257285757565629
+                #rfid = 'CF0073D02C'
+                #print('RFID: ' + rfid)
             
                 try:
-                    person = Person.objects.get(rfid=rfid) 
                 
-                    #issued = False
-                
+
+                        
+                    #person = Person.objects.get(rfid=rfid) 
+                    #person = Person.objects.get(rfid__contains=rfid[2:])
+                    person = Person.objects.get(rfid__iendswith=rfid[2:]) 
+
+                    result = getPreparedPerson2(person)
+                    logger.debug(person)
+                    if result[0]:
+                        if(printVoucher(result[1])):
+                            saveVoucher(result[1])
+                        #else:
+                        #    result = (False, person, 'Chyba tiskárny.')                    
+
+                    '''
+                    logger.debug(person)
+                    now = timezone.localtime(timezone.now())
+                    #print(now.strftime("%Y-%m-%d %H:%M"))
+                    logger.debug(now)
                     
-                    print(person)
-                    #print(person.last_released)
-                    print(timezone.now().strftime("%Y-%m-%d %H:%M"))
-                
-                    now = timezone.now()
-                
                     if person.last_released == None or (person.last_released.year == now.year and person.last_released.month == now.month):
                         #same month
                         if person.quantity > person.released:
                             #OK
-                            person.released = person.released + 1
-                            person.last_released = timezone.now()
-                            person.save()
-                            Voucher.objects.create(person=person, datetime=timezone.now())
-                            #issued = True
-                            print('OK\t' + str(person.released) + '/' +  str(person.quantity))
+                            logger.debug('OK\t' + str(person.released) + '/' +  str(person.quantity))
+                            #if printVoucher(conn, printer, person):
+                            if printVoucher(person):
+                                person.released = person.released + 1
+                                person.last_released = timezone.now()
+                                person.save()
+                                Voucher.objects.create(person=person, datetime=timezone.now())
                         else:
                             #NOK
-                            print('NOK\t' + str(person.released) + '/' +  str(person.quantity))    
+                            logger.debug('NOK\t' + str(person.released) + '/' +  str(person.quantity))    
                     
                     else:
                         #new month
                         if person.quantity > 0:
                             #OK
-                            person.released = 1
-                            person.last_released = timezone.now()
-                            person.save()
-                            Voucher.objects.create(person=person, datetime=timezone.now())
-                            #issued = True
-                            print('OK\t' + str(person.released) + '/' +  str(person.quantity))
+                            logger.debug('OK\t' + str(person.released) + '/' +  str(person.quantity))
+                            #if printVoucher(conn, printer, person):
+                            if printVoucher(person):
+                                person.released = 1
+                                person.last_released = timezone.now()
+                                person.save()
+                                Voucher.objects.create(person=person, datetime=timezone.now())
                         else:
                             #NOK
-                            print('NOK\t' + str(person.released) + '/' +  str(person.quantity))
+                            logger.debug('NOK\t' + str(person.released) + '/' +  str(person.quantity))
+                    '''
                     
-                            
                 except Exception as e:
-                    print(e)
-                    
-                print('')
+                    #print(str(e))
+                    logger.error(str(e)) 
 
-        return 0
+        return 

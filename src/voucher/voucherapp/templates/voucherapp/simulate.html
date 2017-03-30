@@ -54,7 +54,7 @@ Osoba:
     <table>
     <tr><td>Osobní číslo: </td><td> {{ person.personal_number }} </td></tr>
     <tr><td>Středisko: </td><td> {{ person.center }} </td></tr>
-    <tr><td>Vydáno / z celkem: </td><td> {{ person.released }} / {{ person.quantity }} </td></tr>
+    <tr><td>Vydáno: </td><td> {{ person.released }} z {{ person.quantity }} </td></tr>
     <tr><td>Měsíc: </td><td> {{ person.last_released|date:"F" }} {{ person.last_released|date:"Y" }} </td></tr>
     </table>
 {% endif %}

@@ -1,0 +1,4 @@
+#!/bin/bash
+#clear
+cd /home/pi/voucher/src/voucher
+python manage.py csvexport --file /home/pi/public/voucher.csv

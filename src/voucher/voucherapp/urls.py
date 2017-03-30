@@ -25,5 +25,7 @@ urlpatterns = [
     
     #url(r'^password_change/$', 'django.contrib.auth.views.password_change', {'template_name': 'registration/password_change_form2.html'}, name='password_change'),
     #url(r'^password_change_done/$', 'django.contrib.auth.views.password_change_done',  {'template_name': 'registration/password_change_done2.html'}, name='password_change_done'),
+    
+    #url(r'^$', views.simulate, name='simulate'),
 ]
 

@@ -1,0 +1,81 @@
+
+#https://www.youtube.com/watch?v=fGOcgz6z81I
+mkdir install
+cd install
+wget -O master.zip 'https://github.com/plinth666/epsonsimplecups/archive/master.zip'
+unzip master.zip
+cd epsonsimplecups-master
+sudo apt-get update
+sudo apt-get install libcups2-dev
+sudo apt-get install libcupsimage2-dev
+make
+make
+sudo install
+
+sudo adduser pi lpadmin
+
+#https://www.howtogeek.com/169679/how-to-add-a-printer-to-your-raspberry-pi-or-other-linux-computer/
+sudo nano /etc/cups/cupsd.conf
+# Only listen for connections from the local machine
+# Listen localhost:631
+Port 631
+
+< Location / >
+# Restrict access to the server...
+Order allow,deny
+Allow @local
+< /Location >
+
+< Location /admin >
+# Restrict access to the admin pages...
+Order allow,deny
+Allow @local
+< /Location >
+
+< Location /admin/conf >
+AuthType Default
+Require user @SYSTEM
+
+# Restrict access to the configuration files...
+Order allow,deny
+Allow @local
+< /Location >
+
+sudo /etc/init.d/cups restart
+
+
+
+sudo apt-get install python-cups
+
+#samba
+#https://www.htpcguides.com/create-samba-share-raspberry-pi/
+sudo apt-get install samba
+
+sudo nano /etc/samba/smb.conf
+#?   wins support = no > wins support = yes
+
+[public] #This is the name of the share it will show up as when you browse
+comment = Public Folder
+path = /home/pi/public
+create mask = 0775
+directory mask = 0775
+read only = no
+browseable = yes
+public = yes
+force user = pi
+#force user = root
+only guest = no
+
+
+sudo smbpasswd -a pi
+sudo service smbd restart
+sudo service nmbd restart
+
+#Accessing the Windows Share from Linux
+#https://www.howtogeek.com/176471/how-to-share-files-between-windows-and-linux/
+
+sudo apt-get install cifs-utils
+mkdir /home/pi/voucher/xfer
+sudo mount.cifs //192.168.0.14/share /home/pi/voucher/xfer -o user= pass=,pass=,dom=,uid=1000,gid=1000
+sudo umount -f /home/pi/voucher/xfer
+ 

@@ -1,0 +1,4 @@
+#!/bin/bash
+#clear
+cd /home/pi/voucher/src/voucher
+python manage.py runserver 0.0.0.0:8000

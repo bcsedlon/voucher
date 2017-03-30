@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+ 
+{% block title %}{{ title }} | VOUCHER {% endblock %}
+ 
+{% block branding %}
+<style type="text/css">
+  #header
+  {
+    /* your style here */
+  }
+</style>
+<h1 id="site-name"><a href="/">VOUCHER</a> </h1>
+
+
+
+ 
+
+
+
+
+
+{% endblock %}
+ 
+{% block nav-global %}
+<a href="/">Spávce</a> / 
+<a href="/voucherapp/logfile">Log</a> /  
+<a href="/voucherapp/simulate">Simulace</a> / 
+<a href="/voucherapp/upload">Import</a>
+{% endblock %}
