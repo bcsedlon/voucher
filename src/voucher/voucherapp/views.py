@@ -66,8 +66,10 @@ def simulate(request, rfid = 0):
     
     if not form.is_valid():
         rfid = 0
+        pritout = False
     else:
         person = form.cleaned_data['person']
+        printout = form.cleaned_data['printout']
         if person == None:
             rfid = 0
         else:
@@ -90,13 +92,14 @@ def simulate(request, rfid = 0):
             result = (False, person, 'Chyba tiskárny.')
     '''
     if rfid <> 0:
-        if management.commands.core.printResult(result):
-            if result[0]:
+        #if result[0]:
+        if printout:
+            if management.commands.core.printResult(result):
                 management.commands.core.saveVoucher(result[1])
-        else:
-            result = (False, result[1], 'Chyba tiskárny!')
+            else:
+                result = (False, result[1], 'Chyba tiskárny!')
     else:
-        result = (False, result[1], 'Neznáme ID!')
+        result = (False, result[1], 'Neznámé ID!')
             
     context = {
         'result': result[0],

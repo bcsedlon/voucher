@@ -12,7 +12,7 @@ class RFIDForm(forms.Form):
     
     
     person = forms.ModelChoiceField(required=False , queryset=Person.objects.all(), empty_label='', to_field_name='rfid', label='Osoba')
-    
+    printout = forms.BooleanField(required=False ,initial=False, label='Tisk')
     #def __init__(self, *args, **kwargs):
         #super(RFIDForm, self).__init__(*args, **kwargs)
         #field = forms.ChoiceField(choices=Person.objects.all())

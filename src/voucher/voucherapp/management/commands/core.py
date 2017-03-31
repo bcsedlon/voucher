@@ -9,6 +9,7 @@ import serial
 import time
 import logging
 import csv 
+import os
 
 from django.utils.translation import get_language, activate
 import datetime
@@ -41,6 +42,10 @@ def exportFile(fname, logger=logging.getLogger()):
     a.writerows(data)
     return
     '''
+    now = timezone.localtime(timezone.now()) - datetime.timedelta(1)
+    path, file = os.path.split(fname)
+    fname = os.path.join(path, now.strftime('%Y%m%d_') + file)
+    #print(fname)
     try:
         f = open(fname, 'w')
     except Exception as e:
@@ -50,14 +55,14 @@ def exportFile(fname, logger=logging.getLogger()):
     with f:
         writer = csv.writer(f, delimiter = ';')
         
-        vouchers = Voucher.objects.filter()
-        
+        vouchers = Voucher.objects.filter(datetime__year=now.strftime('%Y'),datetime__month=now.strftime('%m'),datetime__day=now.strftime('%d'))
+        #vouchers = Voucher.objects.filter(datetime__range=[now, now + datetime.timedelta(hours=23)])
         
         for v in vouchers:
             #now = timezone.localtime(timezone.now())
             #print(now.strftime("%Y-%m-%d %H:%M"))
             data = [str(v.person), str(v.person.center), timezone.localtime(v.datetime).strftime("%Y-%m-%d %H:%M")]
-            #print(data)
+            print(data)
         
             writer.writerow(data)
         
@@ -259,7 +264,7 @@ Měsíc    : {} {}'''.format(str(person.personal_number), person.center, str(per
 Středisko: {}
 Překročen nárok!'''.format(str(person.personal_number), person.center, str(person.released))
             else:
-                data = '''Neznáme ID!'''
+                data = '''Neznámé ID!'''
     
         print(data)
         
