@@ -89,11 +89,14 @@ def simulate(request, rfid = 0):
         else:
             result = (False, person, 'Chyba tiskárny.')
     '''
-    if management.commands.core.printResult(result):
-        if result[0]:
-            management.commands.core.saveVoucher(result[1])
+    if rfid <> 0:
+        if management.commands.core.printResult(result):
+            if result[0]:
+                management.commands.core.saveVoucher(result[1])
+        else:
+            result = (False, result[1], 'Chyba tiskárny!')
     else:
-        result = (False, result[1], 'Chyba tiskárny.')
+        result = (False, result[1], 'Neznáme ID!')
             
     context = {
         'result': result[0],

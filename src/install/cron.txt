@@ -1,0 +1,5 @@
+@reboot /home/pi/voucher/src/runserver #> /home/pi/voucher/src/runserver.log 2>&1
+@reboot /home/pi/voucher/src/run #> /home/pi/voucher/src/run.log 2>&1
+10 * * * * /home/pi/voucher/src/csvexport #> /home/pi/voucher/src/csvexport.log 2>&1
+15 * * * * /home/pi/voucher/src/csvimport #> /home/pi/voucher/src/csvimport.log 2>&1
+
