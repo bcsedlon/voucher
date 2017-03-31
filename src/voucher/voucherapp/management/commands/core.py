@@ -191,7 +191,7 @@ def getPreparedPerson2(person):
             else:
                 #NOK
                 hasCredit = False
-                message = 'Překročen nárok.'
+                message = 'Překročen nárok!'
                 #print('NOK\t' + str(person.released) + '/' +  str(person.quantity))    
                     
         else:
@@ -207,7 +207,7 @@ def getPreparedPerson2(person):
             else:
                 #NOK
                 hasCredit = False
-                message = 'Překročen nárok.'
+                message = 'Překročen nárok!'
                 #print('NOK\t' + str(person.released) + '/' +  str(person.quantity))
                     
     except Exception as e:
@@ -216,13 +216,76 @@ def getPreparedPerson2(person):
         
     return (hasCredit, person, message)     
 
-def printVoucher(person): #conn, printer, person):
+def printFile(fname):
+    logger.debug('Printing...') 
+    #print('PRINTER')
+    #return True
+    
     try:
         conn = cups.Connection ()
         printers = conn.getPrinters ()
             
         for printer in printers:
-            logger.debug('{0} {1}'.format(printer, printers[printer]['device-uri']))
+            #logger.debug('{0} {1}'.format(printer, printers[printer]['device-uri']))
+            pass
+            
+        printid =conn.printFile(printer, fname, 'voucher', {})
+
+        while conn.getJobs().get(printid, None) is not None:
+            time.sleep(1)
+     
+        
+    
+    except Exception as e:
+            logger.error(str(e)) 
+            return False
+    
+    logger.debug('Printing done.')
+    return True
+ 
+def printResult(result, printer=True):
+    activate('cs')
+    try:
+        person = result[1]
+        if result[0]:
+            month = date(person.last_released, 'F').encode('utf-8')
+            data = '''Osobní č.: {}
+Středisko: {}
+Vydáno   : {} z {}
+Měsíc    : {} {}'''.format(str(person.personal_number), person.center, str(person.released), str(person.quantity), month, person.last_released.strftime('%Y')) #person.last_released.strftime('%B') #date(person.last_released, 'F')
+        else:
+            if person is not None:
+                data = '''Osobní č.: {}
+Středisko: {}
+Překročen nárok!'''.format(str(person.personal_number), person.center, str(person.released))
+            else:
+                data = '''Neznáme ID!'''
+    
+        print(data)
+        
+        fname = 'print.txt'
+        f = open(fname, 'w')
+        f.write(data)
+        f.close()
+        
+        if printer:
+            return printFile(fname)
+        else:
+            return True
+    
+    except Exception as e:
+            logger.error(str(e)) 
+            return False
+    
+   
+def printVoucherXXX(person): #conn, printer, person):
+    try:
+        conn = cups.Connection ()
+        printers = conn.getPrinters ()
+            
+        for printer in printers:
+            #logger.debug('{0} {1}'.format(printer, printers[printer]['device-uri']))
+            pass
             
     #except Exception as e:
     #logger.error(str(e)) 

@@ -82,17 +82,23 @@ class Command(BaseCommand):
 
                 #result = core.getPreparedPerson(rfid)
                 try:
-                    person = Person.objects.get(rfid__iendswith=rfid[2:]) 
-                    result = core.getPreparedPerson2(person)
+                    try:
+                        person = Person.objects.get(rfid__iendswith=rfid[2:]) 
+                        result = core.getPreparedPerson2(person)
+                    except Exception as e:
+                        result =  (False, None, str(e), )
                     logger.debug('{}, {}, {}'.format(result[0], result[1], result[2] ))
                 
-                    if result[0]:
-                        if core.printVoucher(result[1]):
+                    #if result[0]:
+                        #if core.printVoucher(result[1]):
+                    if core.printResult(result):
+                        if result[0]:
                             core.saveVoucher(result[1])
                 
                 except Exception as e:
                     logger.error(str(e))    
             
+            ser.flushInput()
             time.sleep(0.1)
 
         return

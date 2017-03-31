@@ -77,15 +77,24 @@ def simulate(request, rfid = 0):
     #result = machine.getPreparedPerson(rfid)
     result = management.commands.core.getPreparedPerson(rfid)
  
+    '''
     if result[0]:
         #print('PRINT') 
         #machine.saveVoucher(result[1])
         #logger.debug('PRINT')
-        if(management.commands.core.printVoucher(result[1])):
+        
+        #if(management.commands.core.printVoucher(result[1])):
+        if management.commands.core.printResult(result):
             management.commands.core.saveVoucher(result[1])
         else:
             result = (False, person, 'Chyba tiskárny.')
-    
+    '''
+    if management.commands.core.printResult(result):
+        if result[0]:
+            management.commands.core.saveVoucher(result[1])
+    else:
+        result = (False, result[1], 'Chyba tiskárny.')
+            
     context = {
         'result': result[0],
         'person': result[1],

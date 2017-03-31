@@ -1,4 +1,4 @@
 #!/bin/bash
 #clear
 cd /home/pi/voucher/src/voucher
-python manage.py csvexport --file /home/pi/public/voucher.csv
+python manage.py csvexport --file /home/pi/voucher/xfer/voucher.csv

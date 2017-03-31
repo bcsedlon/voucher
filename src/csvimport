@@ -1,4 +1,4 @@
 #!/bin/bash
 #clear
-cd /home/pi/voucher/src/voucher  #After that go to your project directory
-python manage.py csvimport --file /home/pi/public/karty.csv 	 	 #run django server
+cd /home/pi/voucher/src/voucher  
+python manage.py csvimport --file /home/pi/voucher/xfer/karty.csv
