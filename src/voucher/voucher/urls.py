@@ -23,11 +23,6 @@ urlpatterns = [
     url(r'^',  include(admin.site.urls)),
     url(r'^admin/', include(admin.site.urls)),
     url('^accounts/', admin.site.urls),
-    
-    #url(r'^login/$', auth_views.login, name='login'),
-    #url(r'^logout/$', auth_views.logout, name='logout'),
-    
     url(r'^voucherapp/', include('voucherapp.urls', namespace='voucherapp')),
-    #url(r'^logfile/$', views.logfile, name='logfile'),
     #url(r'^', include('voucherapp.urls', namespace='voucherapp')),
 ]

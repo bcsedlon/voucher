@@ -12,9 +12,6 @@ from wsgiref.util import FileWrapper
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 
-#from management.commands.rfid import Machine
-#from management.commands.importFile import ImportMachine
-
 from .forms import RFIDForm
 
 from django.shortcuts import render
@@ -29,6 +26,9 @@ class StrLogger:
         self.log.append('ERROR: ' + msg)
     def warning(self, msg):
         self.log.append('WARNING: ' + msg)
+    def info(self, msg):
+        pass
+        #self.log.append('INFO: ' + msg)
  
 @login_required(login_url='/accounts/login/')      
 def upload(request):
@@ -43,8 +43,6 @@ def upload(request):
             strLogger = StrLogger()
             strLogger.log = []
                     
-            #importMachine = ImportMachine()
-            #importMachine.importFile(uploaded_file_url, strLogger)
             management.commands.core.importFile(uploaded_file_url, strLogger)
 
             fs.delete(filename)
@@ -75,22 +73,8 @@ def simulate(request, rfid = 0):
         else:
             rfid = person.rfid
    
-    #machine = Machine()     
-    #result = machine.getPreparedPerson(rfid)
     result = management.commands.core.getPreparedPerson(rfid)
  
-    '''
-    if result[0]:
-        #print('PRINT') 
-        #machine.saveVoucher(result[1])
-        #logger.debug('PRINT')
-        
-        #if(management.commands.core.printVoucher(result[1])):
-        if management.commands.core.printResult(result):
-            management.commands.core.saveVoucher(result[1])
-        else:
-            result = (False, person, 'Chyba tiskárny.')
-    '''
     if rfid <> 0:
         #if result[0]:
         if printout:
@@ -110,8 +94,6 @@ def simulate(request, rfid = 0):
             
     return render(request, 'voucherapp/simulate.html', context)
  
-#@user_passes_test(lambda u: u.is_superuser, login_url='archaapp:login')
-#@login_required(login_url='auth_views:login')
 @login_required(login_url='/accounts/login/')
 def logfile(request):
     filename = 'logfile'

@@ -23,7 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'p1*4qpfd6v!ibqc5r+_5tv3kk)2e(ec=s6iq*oatc8-63^8y0s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -135,25 +136,16 @@ LOGGING = {
     },
     'loggers': {
         '': {
-          #'handlers': ['console', 'syslog', 'logfile'],
           'handlers': ['console', 'logfile'],
+          #'handlers': ['logfile'],
           'level': 'DEBUG',
         },
         'django': {
             #'handlers':['console', 'logfile'],
-            'handlers':['console'],
+            'handlers':['logfile'],
             'propagate': True,
             'level':'ERROR',
         },
-        #'archaapp': {
-        #    #'handlers': ['console', 'logfile'],
-        #    'handlers': ['console', 'syslog', 'logfile'],
-        #    #'handlers': ['syslog', 'logfile'],
-        #    'propagate': True,
-        #    'level': 'DEBUG',
-        #},
-        
-
     }
 }
 
