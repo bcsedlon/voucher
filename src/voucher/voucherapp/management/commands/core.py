@@ -18,9 +18,28 @@ from django.template.defaultfilters import date
 import cups
 from django.utils import timezone
 
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
+#GPIO.setup(BUZZER_PIN, GPIO.OUT)
+
+BUZZER_PIN = 4
+
 activate('cs')
 logger = logging.getLogger()
 
+def beep(num):
+    #GPIO.setmode(GPIO.BCM)
+    GPIO.setup(BUZZER_PIN, GPIO.OUT)
+    for i in range(0, num): 
+        #print('beep')
+        GPIO.output(BUZZER_PIN, GPIO.HIGH)
+        time.sleep(0.25)
+        GPIO.output(BUZZER_PIN, GPIO.LOW)
+        if i + 1 < num:
+            time.sleep(0.25)
+    
+    #GPIO.setup(BUZZER_PIN, GPIO.IN)
+    
 def exportFile(fname, logger=logging.getLogger()):
 
     logger.info('Exporting file {} ...'.format(fname))
@@ -175,29 +194,45 @@ def printResult(result, printer=True):
         person = result[1]
         if result[0]:
             month = date(person.last_released, 'F').encode('utf-8')
-            data = '''Osobní č.: {}
+            data = '''********* TOKOZ® *********
+Kupón do prádelny
+{} {}
+Osobní č.: {}
 Středisko: {}
 Vydáno   : {} z {}
-Měsíc    : {} {}'''.format(str(person.personal_number), person.center, str(person.released), str(person.quantity), month, person.last_released.strftime('%Y')) #person.last_released.strftime('%B') #date(person.last_released, 'F')
+Platnost : {} {}'''.format(person.first_name, person.last_name, str(person.personal_number), person.center, str(person.released), str(person.quantity), month, person.last_released.strftime('%Y')) #person.last_released.strftime('%B') #date(person.last_released, 'F')
         else:
             if person is not None:
-                data = '''Osobní č.: {}
+                beep(2)
+                data = '''********* TOKOZ® *********
+Kupón do prádelny
+{} {}
+Osobní č.: {}
 Středisko: {}
-Překročen nárok!'''.format(str(person.personal_number), person.center, str(person.released))
+Překročen nárok!'''.format(person.first_name, person.last_name, str(person.personal_number), person.center, str(person.released))
             else:
-                data = '''Neznámé ID!'''
+                beep(3)
+                data = '''********** TOKOZ® *********
+Kupón do prádelny
+Neznámé ID!'''
+           
+            print(data)           
+            return True
     
         print(data)
         
-        fname = 'print.txt'
-        f = open(fname, 'w')
-        f.write(data)
-        f.close()
+        if result[0]:
+            beep(1)
+            
+            fname = 'print.txt'
+            f = open(fname, 'w')
+            f.write(data)
+            f.close()
         
-        if printer:
-            return printFile(fname)
-        else:
-            return True
+            if printer:
+                return printFile(fname)
+            else:
+                return True
     
     except Exception as e:
             logger.error(str(e)) 

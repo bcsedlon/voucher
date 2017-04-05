@@ -23,8 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'p1*4qpfd6v!ibqc5r+_5tv3kk)2e(ec=s6iq*oatc8-63^8y0s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
-DEBUG = False
+DEBUG = True
+#DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -145,6 +145,7 @@ LOGGING = {
             'handlers':['logfile'],
             'propagate': True,
             'level':'ERROR',
+            #'level':'DEBUG',
         },
     }
 }
@@ -152,3 +153,5 @@ LOGGING = {
 #DBBACKUP_STORAGE = 'dbbackup.storage.filesystem_storage'
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location': BASE_DIR + '/backups'}
+
+

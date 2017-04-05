@@ -43,10 +43,10 @@ Tisk na tiskárně:
 {% endif %}
 
 <hr>
-
-<h2>TISK</h2>
 {% if result %}
-    
+<h2>TISK</h2>
+
+{% comment %}
     <table>
     <tr><td>Osobní číslo: </td><td> {{ person.personal_number }} </td></tr>
     <tr><td>Středisko: </td><td> {{ person.center }} </td></tr>
@@ -55,6 +55,8 @@ Tisk na tiskárně:
     </table>
 {% else %}
     {{ message }}
+{% endcomment %}
+
 {% endif %}
 
 {% endblock %} 

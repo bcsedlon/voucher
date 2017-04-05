@@ -76,9 +76,9 @@ def simulate(request, rfid = 0):
     result = management.commands.core.getPreparedPerson(rfid)
  
     if rfid <> 0:
-        #if result[0]:
-        if printout:
-            if management.commands.core.printResult(result):
+        if result[0]:
+        #if printout:
+            if management.commands.core.printResult(result, printout):
                 management.commands.core.saveVoucher(result[1])
             else:
                 result = (False, result[1], 'Chyba tiskárny!')
