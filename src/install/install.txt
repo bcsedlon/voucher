@@ -75,7 +75,9 @@ mkdir /home/pi/voucher/xfer
 sudo mount.cifs //192.168.0.14/share /home/pi/voucher/xfer -o user= pass=,pass=,dom=,uid=1000,gid=1000
 sudo umount -f /home/pi/voucher/xfer
 
-#IP
+#gw
+sudo route add default gw 192.168.0.1
+#ip
 sudo nano /etc/dhcpcd.conf
 >
 interface wlan0
@@ -104,7 +106,9 @@ iface wlan0 inet static
     wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
 
 
-
+#https://www.weaved.com/installing-weaved-raspberry-pi-raspbian-os/
+sudo apt-get install weavedconnectd
+sudo weavedinstaller
 
 
 
