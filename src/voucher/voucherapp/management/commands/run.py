@@ -37,7 +37,7 @@ class Command(BaseCommand):
         
         logger.debug(port)
         #time.sleep(10)
-        core.beep(4)
+        core.beep(1)
         
         while True:
  
