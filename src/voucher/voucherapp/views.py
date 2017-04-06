@@ -77,7 +77,6 @@ def simulate(request, rfid = 0):
  
     if rfid <> 0:
         if result[0]:
-        #if printout:
             if management.commands.core.printResult(result, printout):
                 management.commands.core.saveVoucher(result[1])
             else:

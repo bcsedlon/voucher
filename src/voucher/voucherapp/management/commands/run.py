@@ -36,7 +36,8 @@ class Command(BaseCommand):
         rfid_datetime = 0
         
         logger.debug(port)
-
+        #time.sleep(10)
+        core.beep(4)
         
         while True:
  

@@ -19,26 +19,20 @@ import cups
 from django.utils import timezone
 
 import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM)
-#GPIO.setup(BUZZER_PIN, GPIO.OUT)
-
 BUZZER_PIN = 4
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(BUZZER_PIN, GPIO.OUT)
 
 activate('cs')
 logger = logging.getLogger()
 
 def beep(num):
-    #GPIO.setmode(GPIO.BCM)
-    GPIO.setup(BUZZER_PIN, GPIO.OUT)
     for i in range(0, num): 
-        #print('beep')
         GPIO.output(BUZZER_PIN, GPIO.HIGH)
         time.sleep(0.25)
         GPIO.output(BUZZER_PIN, GPIO.LOW)
         if i + 1 < num:
             time.sleep(0.25)
-    
-    #GPIO.setup(BUZZER_PIN, GPIO.IN)
     
 def exportFile(fname, logger=logging.getLogger()):
 
@@ -62,12 +56,10 @@ def exportFile(fname, logger=logging.getLogger()):
         
         for v in vouchers:
             data = [str(v.person), str(v.person.center), timezone.localtime(v.datetime).strftime("%Y-%m-%d %H:%M")]
-                    
             writer.writerow(data)
     
     logger.info('Export done.')    
      
-                    
 def importFile(fname, logger=logging.getLogger()):
 
     logger.info('Importing file {} ...'.format(fname))
@@ -194,31 +186,28 @@ def printResult(result, printer=True):
         person = result[1]
         if result[0]:
             month = date(person.last_released, 'F').encode('utf-8')
-            data = '''********* TOKOZ® *********
+            data = '''********** TOKOZ® **********
 Kupón do prádelny
 {} {}
 Osobní č.: {}
 Středisko: {}
 Vydáno   : {} z {}
-Platnost : {} {}'''.format(person.first_name, person.last_name, str(person.personal_number), person.center, str(person.released), str(person.quantity), month, person.last_released.strftime('%Y')) #person.last_released.strftime('%B') #date(person.last_released, 'F')
+Platnost : {} {}'''.format(person.first_name.encode('utf-8'), person.last_name.encode('utf-8'), str(person.personal_number).encode('utf-8'), str(person.center).encode('utf-8'), str(person.released).encode('utf-8'), str(person.quantity).encode('utf-8'), month, person.last_released.strftime('%Y').encode('utf-8')) #person.last_released.strftime('%B') #date(person.last_released, 'F')
         else:
             if person is not None:
                 beep(2)
-                data = '''********* TOKOZ® *********
+                data = '''********** TOKOZ® **********
 Kupón do prádelny
 {} {}
 Osobní č.: {}
 Středisko: {}
-Překročen nárok!'''.format(person.first_name, person.last_name, str(person.personal_number), person.center, str(person.released))
+Překročen nárok!'''.format(person.first_name.encode('utf-8'), person.last_name.encode('utf-8'), str(person.personal_number).encode('utf-8'), str(person.center).encode('utf-8'), str(person.released).encode('utf-8'))
             else:
                 beep(3)
-                data = '''********** TOKOZ® *********
+                data = '''*********** TOKOZ® **********
 Kupón do prádelny
 Neznámé ID!'''
            
-            print(data)           
-            return True
-    
         print(data)
         
         if result[0]:
@@ -233,6 +222,8 @@ Neznámé ID!'''
                 return printFile(fname)
             else:
                 return True
+                
+        return True
     
     except Exception as e:
             logger.error(str(e)) 
