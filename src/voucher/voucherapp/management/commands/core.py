@@ -39,7 +39,8 @@ def exportFile(fname, logger=logging.getLogger()):
     logger.info('Exporting file {} ...'.format(fname))
     now = timezone.localtime(timezone.now()) - datetime.timedelta(1)
     path, file = os.path.split(fname)
-    fname = os.path.join(path, now.strftime('%Y%m%d_') + file)
+    #fname = os.path.join(path, now.strftime('%Y%m%d_') + file)
+    fname = os.path.join(path, now.strftime('%Y%m_') + file)
 
     try:
         f = open(fname, 'w')
@@ -82,13 +83,16 @@ def importFile(fname, logger=logging.getLogger()):
             try:
                 #0564-1-HPP;0800E807DD;601;1
                 #rfid = int(row[1], 16)
-                rfid = row[1]
+                
                 personal_number = row[0]
+                rfid = row[1]
                 center = row[2]
-                #first_name = 
-                #last_name = 
+                last_name = row[3]
+                first_name = row[4]
                 #note = 
-                quantity = row[3]
+                quantity = row[5]
+                if quantity == '':
+                    quantity = '0'
                 #released = 
                 #last_released = 
             except Exception as e:
@@ -97,13 +101,17 @@ def importFile(fname, logger=logging.getLogger()):
                 
             try:
                 person = Person.objects.get(personal_number = personal_number)
+                #logger.debug('Update Person: ' + str(row))
                 person.rfid = rfid
                 person.center = center
                 person.quantity = quantity
+                person.last_name = last_name
+                person.first_name = first_name
                 person.save()
             except:
                 try:
-                    Person.objects.create(rfid = rfid, personal_number = personal_number, center = center, quantity = quantity)
+                    #logger.debug('New Person: ' + str(row))
+                    Person.objects.create(rfid = rfid, personal_number = personal_number, center = center, quantity = quantity, last_name = last_name, first_name = first_name)
                 except Exception as e:
                     logger.error(str(e) + ' DATA: ' + str(row))
                     
