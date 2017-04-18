@@ -7,8 +7,22 @@ from django.contrib.auth.models import Group
 
 # Create your models here.
 
+class NullableCharField(models.CharField):
+    description = "CharField that stores NULL but returns ''"
+    #__metaclass__ = models.SubfieldBase
+    #def from_db_value(self, value, expression, connection, context):
+    #    return models.CharField.from_db_value(self, value, expression, connection, context)
+    def to_python(self, value):
+        if isinstance(value, models.CharField):
+            return value
+        return value or ''
+    def get_prep_value(self, value):
+        return value or None
+        
+
 class Person(models.Model):
-    rfid = models.CharField(unique=True, max_length=16, verbose_name='RFID', help_text='')
+    #rfid = models.CharField(unique=True, max_length=16, verbose_name='RFID', help_text='')
+    rfid = NullableCharField(blank=True, null=True, default=None, unique=True, max_length=16, verbose_name='RFID', help_text='')
     personal_number = models.CharField(unique=True, null=False, blank=False, max_length=16, verbose_name='Osobní číslo', help_text='') 
     center = models.IntegerField(default=0, verbose_name='Středisko', help_text='')
     

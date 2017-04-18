@@ -20,6 +20,7 @@ from django.utils import timezone
 
 import RPi.GPIO as GPIO
 BUZZER_PIN = 4
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(BUZZER_PIN, GPIO.OUT)
 
@@ -71,6 +72,8 @@ def importFile(fname, logger=logging.getLogger()):
         logger.error(str(e))
         return 0
 
+    Person.objects.all().update(rfid=None)
+    
     with f:
         reader = csv.reader(f, delimiter = ';')
         for row in reader:
